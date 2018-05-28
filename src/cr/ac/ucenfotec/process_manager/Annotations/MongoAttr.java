@@ -1,0 +1,9 @@
+package cr.ac.ucenfotec.process_manager.Annotations;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+@Retention(RetentionPolicy.RUNTIME)
+public @interface MongoAttr {
+    public String Collection();
+}
