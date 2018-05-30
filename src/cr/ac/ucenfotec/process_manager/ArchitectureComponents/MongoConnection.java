@@ -1,5 +1,6 @@
 package cr.ac.ucenfotec.process_manager.ArchitectureComponents;
 
+import java.util.*;
 import org.bson.Document;
 
 import com.google.gson.Gson;
@@ -13,15 +14,15 @@ import cr.ac.ucenfotec.process_manager.Classes.BaseClass;
 public class MongoConnection {
 	// >> Attributes
 	// Self Instance
-	private static MongoConnection 				Instance;
+	private static MongoConnection Instance;
 	// DB Instance
-	private static MongoDatabase 				DB;
+	private static MongoDatabase DB;
 	// DB Client
-	private static MongoClient 					Client;
+	private static MongoClient Client;
 	// DB Collection
-	private static MongoCollection<Document>	Collection;
+	private static MongoCollection<Document> Collection;
 	// GSON Processor
-	private static Gson							Gson;
+	private static Gson Gson;
 
 	
 	
@@ -31,13 +32,16 @@ public class MongoConnection {
 	}
 	
 	// >> Methods
-	public static MongoConnection GetInstance() {
+	public static MongoConnection GetInstance(String CollectionName) {
 		// >> If the instance is null then create it
 		if (Instance == null) {
 			Instance 	= new MongoConnection();
-			Client = new MongoClient("localhost", 27017);
+			Client 		= new MongoClient("localhost", 27017);
 			Gson		= new Gson();
 			DB			= Client.getDatabase("ProcessManager");
+		}
+		if (Collection == null) {
+			Collection = DB.getCollection(CollectionName);
 		}
 		// >> Otherwise return the instance
 		return Instance;
@@ -45,15 +49,11 @@ public class MongoConnection {
 	// ===================>> DB Methods <<===================
 	// >> Insert
 	public <T extends BaseClass> void Insert (T Doc) {
-		// >> Set Collection
-		SetCollection(Doc);
-		
 		// >> Process Doc (To JSON)
 		String GDoc 	= Gson.toJson(Doc);
-		
 		// >> Process To Mongo Document
 		Document BDoc	= Document.parse(GDoc);
-		
+
 		Collection.insertOne(BDoc);		
 	}
 	// >> Update
@@ -61,17 +61,14 @@ public class MongoConnection {
 	// >> Get
 	
 	// >> List
-	
+	public <T extends BaseClass> T Find (String Query) {
+		// >> Execute Query
+		//List<Document> Results = Collection.find();
+		return null;
+		
+	}
 	// >> Delete
 	
 
 	// ===================>> DB Utils <<===================
-	// Set Collection
-	public <T extends BaseClass> void SetCollection (T Doc) {
-		// >> Get Annotation Value
-		MongoAttr MA = Doc.getClass().getAnnotation(MongoAttr.class);
-		
-		// >> Set Collection
-		Collection = DB.getCollection(MA.Collection());
-	}
 }
